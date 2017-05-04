@@ -39,12 +39,6 @@ function findNthInPlace(arr1, arr2, arr1StartIndex, arr2StartIndex, arr1Len, arr
   }
 }
 
-// find the n-th element
-function findNth(arr1, arr2, n) {
-  
-}
-
-
 /*
  * test
  */
