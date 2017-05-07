@@ -3,7 +3,7 @@
  */
 
 function quickSort(arr, start, end) {
-  if (arr.length < 2) return
+  if (end - start < 2) return
   
   const index = partition(arr, start, end)
   quickSort(arr, start, index)
@@ -42,5 +42,6 @@ function partition(arr, start, end) {
 /*
  * test
  */
-let arr = [4, 2, 7, 1, 9, 3, 5, 4, 9, 11]
-console.log(quickSort(arr, 0, arr.length))
+let arr = [4, 2, 7, 1, 9, 6, 5, 11, 7, 2, 5, 9]
+quickSort(arr, 0, arr.length)
+console.log(arr)
