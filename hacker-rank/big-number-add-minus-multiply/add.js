@@ -37,4 +37,6 @@ function addition (a, b) {
   return result.join('').replace(/^0+/, '')
 }
 
-console.log(addition(55, 555))
+// console.log(addition(55, 555))
+
+module.exports.addition = addition
