@@ -1,6 +1,7 @@
 /**
  * Created by lipeng on 2018/6/18.
  */
+// https://www.hackerrank.com/challenges/mini-max-sum/problem
 function miniMaxSum (arr) {
   let max = Number.NEGATIVE_INFINITY, min = Number.POSITIVE_INFINITY
   const len = arr.length
