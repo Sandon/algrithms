@@ -17,3 +17,4 @@ const testMatrix2Rotate7TimesOutput = [
   [4, 3, 2, 1]
 ]
 console.log(matrixRotation(testMatrix2, 7, 5, 4).toString() == testMatrix2Rotate7TimesOutput.toString())
+

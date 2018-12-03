@@ -177,4 +177,3 @@ const hrTestCase2Output =
 
 // console.log(matrixRotation(toMatrix(hrTestCase2), 20, 20, 35).toString() == toMatrix(hrTestCase2Output).toString())
 
-

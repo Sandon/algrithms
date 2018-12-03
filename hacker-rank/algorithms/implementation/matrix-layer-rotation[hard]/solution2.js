@@ -96,3 +96,4 @@ function mapPositionAntiClock (x, y, leftTopXIndex, leftTopYIndex, sizeX, sizeY,
   return {x, y}
 }
 // console.log(mapPositionAntiClock(1, 2, 1, 1, 6, 7, 2))
+
