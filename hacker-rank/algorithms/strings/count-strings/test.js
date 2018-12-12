@@ -10,4 +10,15 @@ function test () {
     console.log(arr[i])
   }
 }
-test()
+// test()
+
+function testSort () {
+  let arr = [
+    {id: 2},
+    {id: 3},
+    {id: 1}
+  ]
+  arr = arr.sort((a, b) => a.id - b.id)
+  console.log(arr)
+}
+testSort()

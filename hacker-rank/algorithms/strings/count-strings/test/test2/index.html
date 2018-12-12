@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<script type="module">
+  import ast2dfa from '../../ast2dfa.js'
+
+  // ((a*)(b(a*)))
+  const ast1 = {
+    type: AST_NODE_TYPE['series'],
+    left: {
+      type: AST_NODE_TYPE['multiple'],
+      left: {
+        type: AST_NODE_TYPE['atomic'],
+        value: 'a'
+      }
+    },
+    right: {
+      type: AST_NODE_TYPE['series'],
+      left: {
+        type: AST_NODE_TYPE['atomic'],
+        value: 'b'
+      },
+      right: {
+        type: AST_NODE_TYPE['multiple'],
+        left: {
+          type: AST_NODE_TYPE['atomic'],
+          value: 'a'
+        }
+      }
+    }
+  }
+  const nodeArray = []
+  const start = ast2dfa(ast1)
+</script>
+</body>
+</html>

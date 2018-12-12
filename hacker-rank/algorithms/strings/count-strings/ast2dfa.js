@@ -8,16 +8,16 @@ const AST_NODE_TYPE = {
   'parallel': 4
 }
 
-// export default ast2dfa
+export default ast2dfa
 function ast2dfa (ast) {
   let nodeArray = []
-  let {start, end} = ast2Enfa(ast, nodeArray)
+  let { start, end } = ast2Enfa(ast, nodeArray)
   start.isStart = true
   end.isEnd = true
   let validNodeArray = enfa2Nfa(start, end, nodeArray)
   // todo del nodeArray
-
-
+  let { dfaStart, dfaNodes, dfaNodesMap } = efa2Dfa(start)
+  return tree2Array(dfaStart, dfaNodes, dfaNodesMap)
 }
 let enfaNodeUuid = 1
 function ast2Enfa (ast, nodeArray) {
@@ -175,14 +175,16 @@ function efa2Dfa (nfaStartNode) {
   const dfaStart = {
     id: nfaStartNode.id,
     nfaNodes: [nfaStartNode],
-    next: {}
+    next: {},
+    index: 0
   }
+  dfaStart.isStart = true
   const dfaNodes = [dfaStart]
   const dfaNodesMap = {}
   dfaNodesMap[dfaStart.id]= dfaStart
   const willHandledDfa = [dfaStart]
 
-  for (let i = 0; i !== willHandledDfa; i++) {
+  for (let i = 0; i !== willHandledDfa.length; i++) {
     const dfaNode = willHandledDfa[i]
 
     // find dfa next
@@ -196,39 +198,58 @@ function efa2Dfa (nfaStartNode) {
       }
     })
 
-    // construct dfa next node
+    // construct next dfa nodes for every char
     for (let key in nfaNext) {
-      // todo
-    }
-  }
-}
+      if (nfaNext[key]) {
+        nfaNext[key] = nfaNext[key].sort((a, b) => a.id - b.id)
+        const id = nfaNext[key].map(nfaNode => nfaNode.id).join('')
 
-// test 1
-// ((a*)(b(a*)))
-const ast1 = {
-  type: AST_NODE_TYPE['series'],
-  left: {
-    type: AST_NODE_TYPE['multiple'],
-    left: {
-      type: AST_NODE_TYPE['atomic'],
-      value: 'a'
-    }
-  },
-  right: {
-    type: AST_NODE_TYPE['series'],
-    left: {
-      type: AST_NODE_TYPE['atomic'],
-      value: 'b'
-    },
-    right: {
-      type: AST_NODE_TYPE['multiple'],
-      left: {
-        type: AST_NODE_TYPE['atomic'],
-        value: 'a'
+        if (!dfaNodesMap[id]) {
+          // if not exist already, then construct one
+          const newDfaNode= {
+            id: id,
+            nfaNodes: nfaNext[key],
+            next: {},
+            index: dfaNodes.length
+          }
+          nfaNext[key].forEach((nfaNode) => {
+            if (nfaNode.isEnd) {
+              newDfaNode.isEnd = true
+            }
+          })
+
+          dfaNodesMap[id] = newDfaNode
+          dfaNodes.push(newDfaNode)
+          willHandledDfa.push(newDfaNode)
+        }
+        dfaNode.next[key] = dfaNodesMap[id]
       }
     }
   }
-}
-const nodeArray = []
-const start = ast2dfa(ast1)
 
+  // return
+  return {
+    dfaStart,
+    dfaNodes,
+    dfaNodesMap
+  }
+}
+function tree2Array (dfaStart, dfaNodes, dfaNodesMap) {
+  const len = dfaNodes.length
+  const arr = new Array(len)
+  // for (let i = 0; i !==len; i++) {
+  //   arr[i] = new Array(len)
+  // }
+  doTree2Array(arr, dfaStart)
+  return arr
+}
+function doTree2Array (arr, node) {
+  const keys = Object.keys(node.next)
+  for (let i = 0; i !== keys.length; i++) {
+    const key = keys[i]
+    const nextNode = node.next[key]
+    arr[node.index][nextNode.index] = key
+    doTree2Array(arr, nextNode)
+  }
+  // todo
+}
