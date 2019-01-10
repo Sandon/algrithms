@@ -17,7 +17,7 @@ function ast2dfa (ast) {
   let validNodeArray = enfa2Nfa(start, end, nodeArray)
   // todo del nodeArray
   let { dfaStart, dfaNodes, dfaNodesMap } = efa2Dfa(start)
-  return tree2Array(dfaStart, dfaNodes, dfaNodesMap)
+  return tree2Array(dfaStart, dfaNodes.length)
 }
 let enfaNodeUuid = 1
 function ast2Enfa (ast, nodeArray) {
@@ -234,22 +234,44 @@ function efa2Dfa (nfaStartNode) {
     dfaNodesMap
   }
 }
-function tree2Array (dfaStart, dfaNodes, dfaNodesMap) {
-  const len = dfaNodes.length
+export function tree2Array (dfaStart, len) {
+  // const len = dfaNodes.length
   const arr = new Array(len)
-  // for (let i = 0; i !==len; i++) {
-  //   arr[i] = new Array(len)
-  // }
-  doTree2Array(arr, dfaStart)
+  for (let i = 0; i !== len; i++) {
+    arr[i] = new Array(len)
+  }
+  doTree2ArrayLf(arr, dfaStart)
   return arr
 }
-function doTree2Array (arr, node) {
+function doTree2ArrayLf (arr, root) {
+  const list = [root]
+  let node
+  while (node = list.shift()) {
+    node.tree2ArrayVisited = true
+
+    const keys = Object.keys(node.next)
+    for (let i = 0; i !== keys.length; i++) {
+      const key = keys[i]
+      const nextNode = node.next[key]
+      arr[node.index][nextNode.index] = key
+      if (!nextNode.tree2ArrayVisited) {
+        list.push(nextNode)
+      }
+    }
+  }
+}
+
+// deprecated
+function doTree2ArrayDf (arr, node) {
+  if (node.tree2ArrayVisited) {
+    return
+  }
+  node.tree2ArrayVisited = true
   const keys = Object.keys(node.next)
   for (let i = 0; i !== keys.length; i++) {
     const key = keys[i]
     const nextNode = node.next[key]
     arr[node.index][nextNode.index] = key
-    doTree2Array(arr, nextNode)
+    doTree2ArrayDf(arr, nextNode)
   }
-  // todo
 }
