@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        td{
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+<script type="module" language="JavaScript">
+  import printArray from '../printArray.js'
+  import {tree2Array, AST_NODE_TYPE, ast2dfa, array2Matrix, matrixExp} from '../../ast2dfa.js'
+
+  // ((a)*) , 2 , 1
+  const ast = {
+    type: AST_NODE_TYPE['multiple'],
+    left: {
+      type: AST_NODE_TYPE['atomic'],
+      value: 'a'
+    }
+  }
+  // const arr = ast2dfa(ast)
+  // console.log(arr)
+  // printArray(arr)
+
+  // ((a|b)*) , 2 , 4
+  const ast1 = {
+    type: AST_NODE_TYPE['multiple'],
+    left: {
+      type: AST_NODE_TYPE['parallel'],
+      left: {
+        type: AST_NODE_TYPE['atomic'],
+        value: 'a'
+      },
+      right: {
+        type: AST_NODE_TYPE['atomic'],
+        value: 'b'
+      }
+    }
+  }
+  const arr1 = ast2dfa(ast1)
+  console.log(arr1)
+  printArray(arr1)
+  const matrix1 = array2Matrix(arr1)
+  console.log(matrix1)
+  printArray(matrix1)
+  const res1 = matrixExp(matrix1, 2)
+  printArray(res1)
+
+</script>
+</body>
+</html>

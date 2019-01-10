@@ -4,3 +4,6 @@
 function countStrings (r, l) {
 
 }
+function xx() {
+  let i = 1
+}

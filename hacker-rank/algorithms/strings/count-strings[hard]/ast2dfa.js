@@ -1,15 +1,14 @@
 /**
  * Created by Sandon on 2018/12/6.
  */
-const AST_NODE_TYPE = {
+export const AST_NODE_TYPE = {
   'atomic': 1,
   'series': 2,
   'multiple': 3,
   'parallel': 4
 }
 
-export default ast2dfa
-function ast2dfa (ast) {
+export function ast2dfa (ast) {
   let nodeArray = []
   let { start, end } = ast2Enfa(ast, nodeArray)
   start.isStart = true
@@ -21,11 +20,12 @@ function ast2dfa (ast) {
 }
 let enfaNodeUuid = 1
 function ast2Enfa (ast, nodeArray) {
+  let start, end
   switch (ast.type) {
     case AST_NODE_TYPE['atomic']:
       // construct automaton
-      const start = {type: 'start', id: enfaNodeUuid++, next: {}, prev: {}}
-      const end = {type: 'end', id: enfaNodeUuid++, next: {}, prev: {}}
+      start = {type: 'start', id: enfaNodeUuid++, next: {}, prev: {}}
+      end = {type: 'end', id: enfaNodeUuid++, next: {}, prev: {}}
       addLine(start, ast.value, end)
 
       // record in ast node, and in node array
@@ -66,8 +66,8 @@ function ast2Enfa (ast, nodeArray) {
       ast2Enfa(ast.right, nodeArray)
 
       // parallel
-      const start = {type: 'start', id: enfaNodeUuid++, next: {}, prev: {}}
-      const end = {type: 'end', id: enfaNodeUuid++, next: {}, prev: {}}
+      start = {type: 'start', id: enfaNodeUuid++, next: {}, prev: {}}
+      end = {type: 'end', id: enfaNodeUuid++, next: {}, prev: {}}
       addLine(start, '', ast.left.start)
       addLine(start, '', ast.right.start)
       addLine(ast.left.end, '', end)
@@ -234,6 +234,7 @@ function efa2Dfa (nfaStartNode) {
     dfaNodesMap
   }
 }
+
 export function tree2Array (dfaStart, len) {
   // const len = dfaNodes.length
   const arr = new Array(len)
@@ -261,17 +262,54 @@ function doTree2ArrayLf (arr, root) {
   }
 }
 
-// deprecated
-function doTree2ArrayDf (arr, node) {
-  if (node.tree2ArrayVisited) {
-    return
+export function array2Matrix (arr) {
+  const len = arr.length
+  const matrix = new Array(len)
+  for (let i = 0; i !== len; i++) {
+    const row = new Array(len)
+    for (let j = 0; j !== len; j++) {
+      row[j] = arr[i][j] ? 1 : 0
+    }
+    matrix[i] = row
   }
-  node.tree2ArrayVisited = true
-  const keys = Object.keys(node.next)
-  for (let i = 0; i !== keys.length; i++) {
-    const key = keys[i]
-    const nextNode = node.next[key]
-    arr[node.index][nextNode.index] = key
-    doTree2ArrayDf(arr, nextNode)
+  return matrix
+}
+
+export function matrixExp (matrix, exp) {
+  let base = matrix
+
+  const len = matrix.length
+  let res = new Array(len)
+  for (let i = 0; i !== len; i++) {
+    res[i] = new Array(len)
+    for (let j = 0; j !== len; j++) {
+      res[i][j] = i === j ? 1 : 0
+    }
   }
+
+  while (exp) {
+    if (exp % 2 === 1) {
+      res = matrixMulti(res, base)
+    }
+    base = matrixMulti(base, base)
+
+    exp >>= 1
+  }
+
+  return res
+}
+function matrixMulti (matrix1, matrix2) {
+  // 正方形的矩阵
+  const len = matrix1.length
+  const result = new Array(len)
+  for (let i = 0; i !== len; i++) {
+    result[i] = new Array(len)
+    for (let j = 0; j !== len; j++) {
+      result[i][j] = 0
+      for (let k = 0; k !== len; k++) {
+        result[i][j] += matrix1[i][k] * matrix2[k][j]
+      }
+    }
+  }
+  return result
 }

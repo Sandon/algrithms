@@ -12,7 +12,7 @@ export default function printArray (arr) {
     // row.forEach((el) => {
     for (let j = 0; j !== row.length; j++) {
       const el = row[j]
-      const text = document.createTextNode(el || '')
+      const text = document.createTextNode(el === undefined ? '-' : el)
       const td = document.createElement('td')
       td.appendChild(text)
       tr.appendChild(td)
