@@ -15,8 +15,11 @@ export function ast2dfa (ast) {
   end.isEnd = true
   let validNodeArray = enfa2Nfa(start, end, nodeArray)
   // todo del nodeArray
-  let { dfaStart, dfaNodes, dfaNodesMap } = efa2Dfa(start)
-  return tree2Array(dfaStart, dfaNodes.length)
+  let { dfaStart, dfaNodes, dfaNodesMap, dfaEndIndex } = efa2Dfa(start)
+  return {
+    arr: tree2Array(dfaStart, dfaNodes.length),
+    dfaEndIndex
+  }
 }
 let enfaNodeUuid = 1
 function ast2Enfa (ast, nodeArray) {
@@ -179,6 +182,7 @@ function efa2Dfa (nfaStartNode) {
     index: 0
   }
   dfaStart.isStart = true
+  const dfaEndIndex = {}
   const dfaNodes = [dfaStart]
   const dfaNodesMap = {}
   dfaNodesMap[dfaStart.id]= dfaStart
@@ -215,6 +219,7 @@ function efa2Dfa (nfaStartNode) {
           nfaNext[key].forEach((nfaNode) => {
             if (nfaNode.isEnd) {
               newDfaNode.isEnd = true
+              dfaEndIndex[newDfaNode.index] = true
             }
           })
 
@@ -231,7 +236,8 @@ function efa2Dfa (nfaStartNode) {
   return {
     dfaStart,
     dfaNodes,
-    dfaNodesMap
+    dfaNodesMap,
+    dfaEndIndex
   }
 }
 
@@ -312,4 +318,19 @@ function matrixMulti (matrix1, matrix2) {
     }
   }
   return result
+}
+
+export function calcMatrix (matrix, dfaEndIndex) {
+  const len = matrix.length
+  let count = 0
+  for (let i = 0; i !== len; i++) {
+    if (dfaEndIndex[i]) {
+      count += matrix[0][i]
+    }
+  }
+  return count
+}
+
+export function parse (str) {
+
 }

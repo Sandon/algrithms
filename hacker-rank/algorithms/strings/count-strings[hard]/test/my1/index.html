@@ -12,7 +12,7 @@
 <body>
 <script type="module" language="JavaScript">
   import printArray from '../printArray.js'
-  import {tree2Array, AST_NODE_TYPE, ast2dfa, array2Matrix, matrixExp} from '../../ast2dfa.js'
+  import {tree2Array, AST_NODE_TYPE, ast2dfa, array2Matrix, matrixExp, calcMatrix} from '../../ast2dfa.js'
 
   // ((a)*) , 2 , 1
   const ast = {
@@ -41,7 +41,9 @@
       }
     }
   }
-  const arr1 = ast2dfa(ast1)
+  const dfa1 = ast2dfa(ast1)
+  const arr1 = dfa1.arr
+  const dfaEndIndex1 = dfa1.dfaEndIndex
   console.log(arr1)
   printArray(arr1)
   const matrix1 = array2Matrix(arr1)
@@ -49,6 +51,7 @@
   printArray(matrix1)
   const res1 = matrixExp(matrix1, 2)
   printArray(res1)
+  document.querySelector('body').appendChild(document.createTextNode(calcMatrix(res1, dfaEndIndex1)))
 
 </script>
 </body>
