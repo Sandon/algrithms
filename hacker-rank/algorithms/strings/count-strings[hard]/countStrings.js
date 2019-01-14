@@ -11,11 +11,15 @@ export const AST_NODE_TYPE = {
 export function ast2dfa (ast) {
   let nodeArray = []
   let { start, end } = ast2Enfa(ast, nodeArray)
+
   start.isStart = true
   end.isEnd = true
   let validNodeArray = enfa2Nfa(start, end, nodeArray)
+  console.log(nodeArray)
+  return
   // todo del nodeArray
-  let { dfaStart, dfaNodes, dfaNodesMap, dfaEndIndex } = efa2Dfa(start)
+  let { dfaStart, dfaNodes, dfaNodesMap, dfaEndIndex } = nfa2Dfa(start)
+
   return {
     arr: tree2Array(dfaStart, dfaNodes.length),
     dfaEndIndex
@@ -99,6 +103,7 @@ function addLine (src, char, target) {
 function enfa2Nfa (start, end, nodeArray) {
   // 1. find all valid nodes
   const validNodeArray = []
+
   nodeArray.forEach((node) => {
     if (node === start) {
       node.valid = true
@@ -112,7 +117,6 @@ function enfa2Nfa (start, end, nodeArray) {
   })
   // end set
   const endSet = findEndSet(end)
-
 
   // 2. cope non empty line for valid node
   validNodeArray.forEach((node) => {
@@ -151,30 +155,50 @@ function findEndSet (end) {
   const travelSet = [end]
 
   for (let i = 0; i !== travelSet.length; i++) {
+    // console.log('here')
+    // if (i === 100000) break
+    travelSet[i].findEndSetVisited = true
     if (travelSet[i].prev['']) {
       travelSet[i].prev[''].forEach((prevNode) => {
         if (prevNode.valid) {
           endSet.push(prevNode)
           prevNode.isEnd = true
         }
-        travelSet.push(prevNode)
+        !prevNode.findEndSetVisited && travelSet.push(prevNode)
+      })
+    }
+  }
+  // console.log(endSet)
+  return endSet
+}
+function findEmptyClosure (node, level = 1) {
+  // let closure = []
+  // if (node.next['']) {
+  //   node.next[''].forEach((nextNode) => {
+  //     closure.push(nextNode)
+  //     closure = closure.concat(findEmptyClosure(nextNode, level + 1))
+  //   })
+  // }
+  // level === 1 && console.log(closure)
+  // return closure
+
+  const closure = []
+  const travelSet = [node]
+  const visitedIds = {}
+  for (let i = 0; i !== travelSet.length; i++) {
+    visitedIds[travelSet[i].id] = true
+    // travelSet[i].findEmptySetVisited = true
+    if (travelSet[i].next['']) {
+      travelSet[i].next[''].forEach((nextNode) => {
+        closure.push(nextNode)
+        !visitedIds[nextNode.id] && travelSet.push(nextNode)
       })
     }
   }
 
-  return endSet
-}
-function findEmptyClosure (node) {
-  let closure = []
-  if (node.next['']) {
-    node.next[''].forEach((nextNode) => {
-      closure.push(nextNode)
-      closure = closure.concat(findEmptyClosure(nextNode))
-    })
-  }
   return closure
 }
-function efa2Dfa (nfaStartNode) {
+function nfa2Dfa (nfaStartNode) {
   const dfaStart = {
     id: nfaStartNode.id,
     nfaNodes: [nfaStartNode],
@@ -241,6 +265,7 @@ function efa2Dfa (nfaStartNode) {
   }
 }
 
+// 用二维数组表示tree，数组中是具体字符
 export function tree2Array (dfaStart, len) {
   // const len = dfaNodes.length
   const arr = new Array(len)
@@ -268,6 +293,7 @@ function doTree2ArrayLf (arr, root) {
   }
 }
 
+// 用二维数组表示tree，有路径则为1，没有路径则为0
 export function array2Matrix (arr) {
   const len = arr.length
   const matrix = new Array(len)
@@ -281,6 +307,7 @@ export function array2Matrix (arr) {
   return matrix
 }
 
+// 矩阵求幂
 export function matrixExp (matrix, exp) {
   let base = matrix
 
@@ -320,6 +347,7 @@ function matrixMulti (matrix1, matrix2) {
   return result
 }
 
+// 计算最后的结果
 export function calcMatrix (matrix, dfaEndIndex) {
   const len = matrix.length
   let count = 0
@@ -331,6 +359,98 @@ export function calcMatrix (matrix, dfaEndIndex) {
   return count
 }
 
+// 将正则表达是解析成ast
+const concatReg = /^\((a|b|\(.+\))(a|b|\(.+\))\)$/
+const unionReg = /^\((a|b|\(.+\))\|(a|b|\(.+\))\)$/
+const multipleReg = /^\((a|b|\(.+\))\*\)$/
 export function parse (str) {
+  // 单个文本
+  if (str === 'a' || str === 'b') {
+    return {
+      type: AST_NODE_TYPE['atomic'],
+      value: str
+    }
+  }
 
+  // 有括号
+  if (str[0] === '(' && str[str.length - 1] === ')') {
+    // 去掉最外层括号
+    str = str.slice(1, str.length - 1)
+
+    // multiple
+    if (str[str.length - 1] === '*') {
+      return {
+        type: AST_NODE_TYPE['multiple'],
+        left: parse(str.slice(0, -1))
+      }
+    }
+
+    // find middle
+    let end, findEnd = false
+    if (str[0] === 'a' || str[0] === 'b') {
+      end = 0
+    } else {
+      let leftBracketNum = 0
+      for (let i = 0; i !== str.length; i++) {
+        if (str[i] === '(') {
+          leftBracketNum++
+        }
+        else if (str[i] === ')') {
+          leftBracketNum--
+          if (!leftBracketNum) {
+            end = i
+            break
+          }
+        }
+      }
+    }
+
+    if (str[end + 1] === '|') {
+      const middle = end + 1
+      // union
+      return {
+        type: AST_NODE_TYPE['parallel'],
+        left: parse(str.slice(0, middle)),
+        right: parse(str.slice(middle + 1))
+      }
+    } else {
+      // concat
+      return {
+        type: AST_NODE_TYPE['series'],
+        left: parse(str.slice(0, end + 1)),
+        right: parse(str.slice(end + 1))
+      }
+    }
+
+  }
+  console.log(str)
+  throw new Error('错误的字符串')
+}
+
+export function countString (str, len, printArray) {
+  let ast = parse(str)
+  console.log(ast)
+
+  const dfa = ast2dfa(ast)
+  return
+  const arr = dfa.arr
+  const dfaEndIndex = dfa.dfaEndIndex
+  // console.log(arr)
+  printArray && printArray(arr)
+  const matrix = array2Matrix(arr)
+  // console.log(matrix)
+  printArray && printArray(matrix)
+  const res = matrixExp(matrix, len)
+  printArray && printArray(res)
+  document.querySelector('body').appendChild(document.createTextNode(calcMatrix(res, dfaEndIndex)))
+}
+
+export function countStrings (str, len) {
+  let ast = parse(str)
+  const dfa = ast2dfa(ast)
+  const arr = dfa.arr
+  const dfaEndIndex = dfa.dfaEndIndex
+  const matrix = array2Matrix(arr)
+  const res = matrixExp(matrix, len)
+  return calcMatrix(res, dfaEndIndex)
 }

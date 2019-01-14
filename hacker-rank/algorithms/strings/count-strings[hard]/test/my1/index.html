@@ -12,7 +12,16 @@
 <body>
 <script type="module" language="JavaScript">
   import printArray from '../printArray.js'
-  import {tree2Array, AST_NODE_TYPE, ast2dfa, array2Matrix, matrixExp, calcMatrix} from '../../ast2dfa.js'
+  import {
+      tree2Array,
+      AST_NODE_TYPE,
+      countStrings,
+      array2Matrix,
+      matrixExp,
+      calcMatrix,
+      parse,
+      countString
+  } from '../../countStrings.js'
 
   // ((a)*) , 2 , 1
   const ast = {
@@ -27,32 +36,34 @@
   // printArray(arr)
 
   // ((a|b)*) , 2 , 4
-  const ast1 = {
-    type: AST_NODE_TYPE['multiple'],
-    left: {
-      type: AST_NODE_TYPE['parallel'],
-      left: {
-        type: AST_NODE_TYPE['atomic'],
-        value: 'a'
-      },
-      right: {
-        type: AST_NODE_TYPE['atomic'],
-        value: 'b'
-      }
-    }
-  }
-  const dfa1 = ast2dfa(ast1)
-  const arr1 = dfa1.arr
-  const dfaEndIndex1 = dfa1.dfaEndIndex
-  console.log(arr1)
-  printArray(arr1)
-  const matrix1 = array2Matrix(arr1)
-  console.log(matrix1)
-  printArray(matrix1)
-  const res1 = matrixExp(matrix1, 2)
-  printArray(res1)
-  document.querySelector('body').appendChild(document.createTextNode(calcMatrix(res1, dfaEndIndex1)))
+  // let ast1 = parse('((a|b)*)')
+  // let ast1 = {
+  //   type: AST_NODE_TYPE['multiple'],
+  //   left: {
+  //     type: AST_NODE_TYPE['parallel'],
+  //     left: {
+  //       type: AST_NODE_TYPE['atomic'],
+  //       value: 'a'
+  //     },
+  //     right: {
+  //       type: AST_NODE_TYPE['atomic'],
+  //       value: 'b'
+  //     }
+  //   }
+  // }
 
+  // const dfa1 = ast2dfa(ast1)
+  // const arr1 = dfa1.arr
+  // const dfaEndIndex1 = dfa1.dfaEndIndex
+  // console.log(arr1)
+  // printArray(arr1)
+  // const matrix1 = array2Matrix(arr1)
+  // console.log(matrix1)
+  // printArray(matrix1)
+  // const res1 = matrixExp(matrix1, 2)
+  // printArray(res1)
+  // document.querySelector('body').appendChild(document.createTextNode(calcMatrix(res1, dfaEndIndex1)))
+  countString('((a|b)*)', 2, printArray)
 </script>
 </body>
 </html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <style>
+    td{
+      border: 1px solid black;
+    }
+  </style>
+</head>
+<body>
+<script type="module">
+  import printArray from '../printArray.js'
+  import {countStrings} from '../../countStrings.js'
+  import {input} from './input.js'
+  import {output} from './output.js'
+
+  const outputArr = output.split('\n').filter((line) => !!line)
+
+  input.split('\n')
+    .filter((line) => !!line)
+    .forEach((line, index) => {
+      line = line.trim()
+      if (line) {
+        const rl = line.split(' ')
+        const r = rl[0]
+        const l = parseInt(rl[1], 10)
+        let result = countStrings(r, l)
+        console.log(result == outputArr[index])
+      }
+    })
+
+  // countString('((a*)(b(a*)))', 100, printArray)
+
+</script>
+</body>
+</html>

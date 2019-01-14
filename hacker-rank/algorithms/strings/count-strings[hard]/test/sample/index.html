@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <style>
+    td{
+      border: 1px solid black;
+    }
+  </style>
+</head>
+<body>
+<script type="module">
+  import printArray from '../printArray.js'
+  import {countString} from '../../countStrings.js'
+
+  // sample1: ((ab)|(ba)), 2, 2
+  // countString('((ab)|(ba))', 2, printArray)
+
+  // sample2: ((a|b)*) , 5, 32
+  // countString('((a|b)*)', 5, printArray)
+
+  // sample3: ((a*)(b(a*))), 100, 100
+  // countString('((a*)(b(a*)))', 100, printArray)
+
+  // test-case1 line 2 : ((((ab)|a)*)|(((aa)|(bb))*)) , 1, 1
+  // countString('((((ab)|a)*)|(((aa)|(bb))*))', 1, printArray)
+
+  // test-case1 line 15 : ((((ab)*)((ba)*))*) ,15, 0
+  // countString('((((ab)*)((ba)*))*)', 15, printArray)
+
+  // test-case2 line 1 : 937477085, 971722885
+  countString('((((b*)((b(a|a))a))(((a*)|a)a))((aa)((((((b*)*)(b|((b|(aa))|b)))(a|b))|(b*))*)))', 9, printArray)
+</script>
+</body>
+</html>
