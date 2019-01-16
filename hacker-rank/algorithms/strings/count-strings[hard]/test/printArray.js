@@ -3,6 +3,7 @@
  */
 export default function printArray (arr) {
   const table = document.createElement('table')
+  document.querySelector('body').appendChild(document.createTextNode('-------------'))
   document.querySelector('body').appendChild(table)
   // arr.forEach((row) => {
   for (let i = 0; i !== arr.length; i++) {
@@ -12,7 +13,7 @@ export default function printArray (arr) {
     // row.forEach((el) => {
     for (let j = 0; j !== row.length; j++) {
       const el = row[j]
-      const text = document.createTextNode(el === undefined ? '-' : el)
+      const text = document.createTextNode(el === undefined || el === '' ? '-' : el)
       const td = document.createElement('td')
       td.appendChild(text)
       tr.appendChild(td)

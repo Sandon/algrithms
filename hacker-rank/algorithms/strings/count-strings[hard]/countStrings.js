@@ -1,6 +1,9 @@
 /**
  * Created by Sandon on 2018/12/6.
  */
+// import NP from './number-precision.js'
+// const NP = require('number-precision')
+const module = 1000000007
 export const AST_NODE_TYPE = {
   'atomic': 1,
   'series': 2,
@@ -15,8 +18,7 @@ export function ast2dfa (ast) {
   start.isStart = true
   end.isEnd = true
   let validNodeArray = enfa2Nfa(start, end, nodeArray)
-  console.log(nodeArray)
-  return
+
   // todo del nodeArray
   let { dfaStart, dfaNodes, dfaNodesMap, dfaEndIndex } = nfa2Dfa(start)
 
@@ -213,6 +215,10 @@ function nfa2Dfa (nfaStartNode) {
   const willHandledDfa = [dfaStart]
 
   for (let i = 0; i !== willHandledDfa.length; i++) {
+    // if (i === 100) {
+    //   console.log(willHandledDfa)
+    //   break
+    // }
     const dfaNode = willHandledDfa[i]
 
     // find dfa next
@@ -229,8 +235,9 @@ function nfa2Dfa (nfaStartNode) {
     // construct next dfa nodes for every char
     for (let key in nfaNext) {
       if (nfaNext[key]) {
+        nfaNext[key] = deduplicate(nfaNext[key])
         nfaNext[key] = nfaNext[key].sort((a, b) => a.id - b.id)
-        const id = nfaNext[key].map(nfaNode => nfaNode.id).join('')
+        const id = nfaNext[key].map(nfaNode => nfaNode.id).join('-')
 
         if (!dfaNodesMap[id]) {
           // if not exist already, then construct one
@@ -263,6 +270,17 @@ function nfa2Dfa (nfaStartNode) {
     dfaNodesMap,
     dfaEndIndex
   }
+}
+function deduplicate (arr) {
+  const existed = {}
+  const result = []
+  arr.forEach((item) => {
+    if (!existed[item.id]) {
+      existed[item.id] = true
+      result.push(item)
+    }
+  })
+  return result
 }
 
 // 用二维数组表示tree，数组中是具体字符
@@ -321,6 +339,7 @@ export function matrixExp (matrix, exp) {
   }
 
   while (exp) {
+    // console.log(exp)
     if (exp % 2 === 1) {
       res = matrixMulti(res, base)
     }
@@ -340,11 +359,77 @@ function matrixMulti (matrix1, matrix2) {
     for (let j = 0; j !== len; j++) {
       result[i][j] = 0
       for (let k = 0; k !== len; k++) {
-        result[i][j] += matrix1[i][k] * matrix2[k][j]
+        // console.log('here')
+        // result[i][j] = addition(result[i][j], multiply(matrix1[i][k], matrix2[k][j]))
+        // result[i][j] += matrix1[i][k] * matrix2[k][j]
+        result[i][j] = ((matrix1[i][k] * matrix2[k][j]) % module + result[i][j]) % module
       }
     }
   }
   return result
+}
+function addition (a, b) {
+  // a plus b may produce carry
+  a = `0${a}`.split('')
+  b = `0${b}`.split('')
+
+  // padding two array with '0' at front in order to make them have same length
+  const distance = a.length - b.length
+  if (distance > 0) {
+    for (let i = 0; i !== distance; i++) {
+      b.unshift('0')
+    }
+  } else if (distance < 0) {
+    const guard = Math.abs(distance)
+    for (let i = 0; i !== guard; i++) {
+      a.unshift('0')
+    }
+  }
+
+  // do addition
+  let result = []
+  const len = Math.max(a.length, b.length)
+  for (let i = len - 1, carry = 0; i >= 0; i--) {
+    let  tmp = +a[i] + (+b[i]) + carry
+    if (tmp > 9) {
+      carry = 1
+      result.unshift(tmp - 10)
+    } else {
+      carry = 0
+      result.unshift(tmp)
+    }
+  }
+
+  result = result.join('').replace(/^0+/, '')
+  return result || 0
+}
+function multiply (a, b) {
+  a = `${a}`.split('') // .reverse()
+  b = `${b}`.split('') // .reverse()
+
+  // 初始化
+  const len = a.length + b.length
+  const result = new Array(len)
+  for (let i = 0; i !== len; i++) {
+    result[i] = 0
+  }
+
+  // 计算
+  for (let i = 0; i !== a.length; i++) {
+    for (let j = 0; j !== b.length; j++) {
+      result[i + j + 1] +=  a[i] * b[j]
+    }
+  }
+
+  // 处理进位
+  for (let i = result.length - 1; i >= 0; i--) {
+    if (result[i] > 9) {
+      result[i - 1] += Math.floor(result[i] / 10)
+      result[i] %= 10
+    }
+  }
+
+  return result.join('').replace(/^0+/, '')
 }
 
 // 计算最后的结果
@@ -353,7 +438,9 @@ export function calcMatrix (matrix, dfaEndIndex) {
   let count = 0
   for (let i = 0; i !== len; i++) {
     if (dfaEndIndex[i]) {
-      count += matrix[0][i]
+      // count = addition(count, matrix[0][i])
+      // count += matrix[0][i]
+      count = (count + matrix[0][i]) % module
     }
   }
   return count
@@ -428,11 +515,12 @@ export function parse (str) {
 }
 
 export function countString (str, len, printArray) {
+  console.time('before')
   let ast = parse(str)
   console.log(ast)
 
   const dfa = ast2dfa(ast)
-  return
+
   const arr = dfa.arr
   const dfaEndIndex = dfa.dfaEndIndex
   // console.log(arr)
@@ -440,7 +528,11 @@ export function countString (str, len, printArray) {
   const matrix = array2Matrix(arr)
   // console.log(matrix)
   printArray && printArray(matrix)
+  console.timeEnd('before')
+  console.time('after')
   const res = matrixExp(matrix, len)
+  console.timeEnd('after')
+  console.log(res)
   printArray && printArray(res)
   document.querySelector('body').appendChild(document.createTextNode(calcMatrix(res, dfaEndIndex)))
 }

@@ -13,6 +13,7 @@
 <script type="module">
   import printArray from '../printArray.js'
   import {countString} from '../../countStrings.js'
+  import {count} from '../../other.js'
 
   // sample1: ((ab)|(ba)), 2, 2
   // countString('((ab)|(ba))', 2, printArray)
@@ -30,7 +31,8 @@
   // countString('((((ab)*)((ba)*))*)', 15, printArray)
 
   // test-case2 line 1 : 937477085, 971722885
-  countString('((((b*)((b(a|a))a))(((a*)|a)a))((aa)((((((b*)*)(b|((b|(aa))|b)))(a|b))|(b*))*)))', 9, printArray)
+  countString('((((b*)((b(a|a))a))(((a*)|a)a))((aa)((((((b*)*)(b|((b|(aa))|b)))(a|b))|(b*))*)))', 937477085, printArray)
+  count('((((b*)((b(a|a))a))(((a*)|a)a))((aa)((((((b*)*)(b|((b|(aa))|b)))(a|b))|(b*))*)))', 937477085, printArray)
 </script>
 </body>
 </html>

@@ -38,5 +38,6 @@ function addition (a, b) {
 }
 
 // console.log(addition(55, 555))
+// console.log(addition('55', '555'))
 
 module.exports.addition = addition
