@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<script type="module">
+  import {input} from './input.js'
+  import {insertionSort} from '../../index.js'
+  import {insertionSortNormal} from '../../normal-solution.js'
+  input.split('\n')
+    .filter((line) => !!line)
+    .forEach((line, index) => {
+      line = line.trim()
+      if (line && index % 2 === 1) {
+        const arr = line.split(' ')
+        // console.log(arr.length)
+        console.log(insertionSort(arr))
+        console.log(insertionSortNormal(arr))
+      }
+    })
+</script>
+</body>
+</html>
