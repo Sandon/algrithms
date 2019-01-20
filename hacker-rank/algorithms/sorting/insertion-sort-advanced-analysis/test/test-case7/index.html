@@ -7,13 +7,13 @@
 <body>
 <script type="module">
   import {input} from './input.js'
-  import {insertionSort} from '../../index.js'
+  import {insertionSort} from '../../solution-with-bit.js'
   import {insertionSortNormal} from '../../normal-solution.js'
   input.split('\n')
     .filter((line) => !!line)
     .forEach((line, index) => {
       line = line.trim()
-      if (line && index % 2 === 1 && index === 1) {
+      if (line && index % 2 === 1) {
         const arr = line.split(' ').map(arrTemp => parseInt(arrTemp, 10))
         // console.log(arr)
         console.time('time')
