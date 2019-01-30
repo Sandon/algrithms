@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <style>
+    td{
+      border: 1px solid black;
+    }
+  </style>
+</head>
+<body>
+<script type="module">
+  import {morganAndString} from '../../index.js'
+  import {input} from './input.js'
+  import {output} from './output.js'
+
+  const outputArr = output.split('\n').filter((line) => !!line)
+  const inputArr = input.split('\n').filter((line) => !!line)
+
+  for (let i = 0; i !== parseInt(inputArr[0]); i++) {
+    console.time(i)
+    const result = morganAndString(inputArr[i * 2 + 1], inputArr[i * 2 + 2])
+    console.timeEnd(i)
+    console.log(result)
+    console.log(result === outputArr[i])
+  }
+
+
+</script>
+</body>
+</html>
