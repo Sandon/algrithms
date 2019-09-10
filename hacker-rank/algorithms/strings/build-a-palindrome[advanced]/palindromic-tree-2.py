@@ -19,7 +19,6 @@ class Node:
         # Suffix Node for the current Node
         self.suffixEdge = suffixEdge
 
-
 # Function to insert edge in tree
 def insert(currIndex, currNode, ptr, s, tree):
     # global currNode, ptr
@@ -78,7 +77,6 @@ def insert(currIndex, currNode, ptr, s, tree):
     # return
     return {'currNode': currNode, 'ptr': ptr}
 
-
 def palindromicTree(s):
     MAXN = 1000
 
@@ -112,6 +110,10 @@ def palindromicTree(s):
         currNode = ret['currNode']
         ptr = ret['ptr']
     return {'tree': tree, 'ptr': ptr}
+
+def buildPalindrome(a, b):
+
+    return
 
 # Driver code
 if __name__ == "__main__":
