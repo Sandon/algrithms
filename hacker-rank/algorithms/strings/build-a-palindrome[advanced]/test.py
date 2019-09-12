@@ -8,3 +8,17 @@ def fn ():
 
 val = fn()
 print (val)
+
+str = 'xyz'
+r = str[::-1]
+print (r)
+
+objHaha = {1: 'y'}
+print(not('z' in objHaha))
+print(1 in objHaha)
+print('---------')
+for i in range(3, 1, -1):
+    print(i)
+
+print('ba' < 'ab')
+print(str[1:2])

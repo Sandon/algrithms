@@ -1,0 +1,10 @@
+-1
+oozlzoo
+lxsysxl
+folpcfblpncetyhtrwxkbosccskxbuvcrosavnpxzoeoyyghbbqkflslfkqbbhgyyoeozxpnvasorcvubxksccsobkxwrthytecnplbfcplof
+rvngnvr
+bkkb
+-1
+zlz
+-1
+-1

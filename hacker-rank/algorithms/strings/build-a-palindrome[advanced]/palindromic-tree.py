@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 
+# 仅仅构建回文树
+
 class Node:
     def __init__(self, length=None,
                  suffixEdge=None):

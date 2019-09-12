@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 
+# 解决方案1
+
 class Node:
     def __init__(self, length=None,
                  suffixEdge=None):
@@ -111,18 +113,168 @@ def palindromicTree(s):
         ptr = ret['ptr']
     return {'tree': tree, 'ptr': ptr}
 
-def buildPalindrome(a, b):
+# 从str1的所有后缀中，最长的属于str2的子串的后缀
+def findLongest (str1, str2):
+    maxNum = 0
+    maxSuffix = ''
+    for i in range(len(str2) - 1, -1, -1):
+        tmp = i
+        for j in range(len(str1) - 1, -1, -1):
+            if (tmp == -1 or str2[tmp] != str1[j]):
+                break
+            else:
+                tmp = tmp - 1
+        # print(tmp, i)
+        suffix = str2[(tmp + 1): (i + 1)]
+        suffixLen = len(suffix)
+        if (suffixLen > maxNum):
+            maxSuffix = suffix
+            maxNum = suffixLen
 
-    return
+    return maxSuffix
+
+def getStr(node, originStr, roundStr):
+    output = ''
+    for i in range(node.start, node.end + 1):
+        output += originStr[i]
+    output = roundStr + output
+    output += roundStr[::-1]
+    return output
+
+def buildPalindrome(a, b):
+    treeObjA = palindromicTree(a)
+    treeA = treeObjA['tree']
+    lastA = treeObjA['ptr']
+
+    treeObjB = palindromicTree(b)
+    treeB = treeObjB['tree']
+    lastB = treeObjB['ptr']
+
+    result = {}
+    maxLen = 0
+    maxStr = ''
+
+    # treeA and bReverseStr
+    bReverseStr = b[::-1]
+    for i in range(3, lastA + 1):
+        # 找到回文
+        pal = ''
+        for j in range(treeA[i].start, treeA[i].end + 1):
+            pal += a[j]
+        palLen = len(pal)
+
+        # 找到回文所有的位置
+        start = 0
+        end = len(a)
+        index = a.find(pal, start, end)
+        while index != -1:
+            before = a[0: index]
+            roundStr = findLongest(before, bReverseStr)
+            num = len(roundStr)
+            if num == 0:
+                index = a.find(pal, index + 1, end)
+                continue
+            totalLen = num * 2 + (treeA[i].end - treeA[i].start + 1)
+            # if not (totalLen in result):
+            #     result[totalLen] = []
+            # result[totalLen].append({'tree': treeA[i], 'roundStr': roundStr})
+            resultStr = roundStr + pal + roundStr[::-1]
+            # print(resultStr)
+            if totalLen > maxLen:
+                maxLen = totalLen
+                maxStr = resultStr
+            elif totalLen == maxLen and resultStr < maxStr:
+                maxStr = resultStr
+
+            index = a.find(pal, index + 1, end)
+
+
+    # treeB and aReverseStr
+    aReverseStr = a[::-1]
+    for i in range(3, lastB + 1):
+        # 找到回文
+        pal = ''
+        for j in range(treeB[i].start, treeB[i].end + 1):
+            pal += b[j]
+        palLen = len(pal)
+
+        # 找到回文所有的位置
+        start = 0
+        end = len(b)
+        index = b.find(pal, start, end)
+        while index != -1:
+            after = b[index + palLen:]
+            afterReverse = after[::-1]
+            roundStr = findLongest(afterReverse, a)
+            num = len(roundStr)
+            if num == 0:
+                index = b.find(pal, index + 1, end)
+                continue
+            totalLen = num * 2 + (treeB[i].end - treeB[i].start + 1)
+            # if not (totalLen in result):
+            #     result[totalLen] = []
+            # result[totalLen].append({'tree': treeB[i], 'roundStr': roundStr})
+            resultStr = roundStr + pal + roundStr[::-1]
+            # print(resultStr)
+            if totalLen > maxLen:
+                maxLen = totalLen
+                maxStr = resultStr
+            elif totalLen == maxLen and resultStr < maxStr:
+                maxStr = resultStr
+
+            index = b.find(pal, index + 1, end)
+
+
+    if (maxLen == 0):
+        return '-1'
+    else:
+        return maxStr
+
+
 
 # Driver code
 if __name__ == "__main__":
 
-    s = "forgeeksskeegfor"
-    treeObj = palindromicTree(s)
-    tree = treeObj['tree']
-    last = treeObj['ptr']
-    output = ''
-    for i in range(tree[last].start, tree[last].end + 1):
-        output += s[i]
-    print(output)
+    # s = "forgeeksskeegfor"
+    # s = 'qquhuwqhdswxxrxuzzfhkplwunfagppcoildagktgdarveusjuqfistulgbglwmfgzrnyxryetwzhlnfewczmnoozlqatugmd'
+    # treeObj = palindromicTree(s)
+    # tree = treeObj['tree']
+    # last = treeObj['ptr']
+    # for j in range(3, last + 1):
+    #     output = ''
+    #     for i in range(tree[j].start, tree[j].end + 1):
+    #         output += s[i]
+    # # print(buildPalindrome('bac', 'bac'))
+    # print(buildPalindrome('abc', 'def'))
+    # print(buildPalindrome('jdfh', 'fds'))
+    # print(findLongest('ca', 'bac'))
+
+    input = [
+        10,
+        'ottloictodtdtloloollllyocidyiodttoacoctcdcidcdttyoiilocltacdlydaailaiylcttilld',
+        'jevgfsuujwrunvgvgwpfbknkruvwzgxxgksmexqvxbghfffseuugxkwexhzfbpu',
+        'qquhuwqhdswxxrxuzzfhkplwunfagppcoildagktgdarveusjuqfistulgbglwmfgzrnyxryetwzhlnfewczmnoozlqatugmd',
+        'jwgzcfabbkoxyjxkatjmpprswkdkobdagwdwxsufeesrvncbszcepigpbzuzoootorzfskcwbqorvw',
+        'dczatfarqdkelalxzxillkfdvpfpxabqlngdscrentzamztvvcvrtcm',
+        'bqlizijdwtuyfrxolsysxlfebpolcmqsppmrfkyunydtmwbexsngxhwvroandfqjamzkpttslildlrkjoyrpxugiceahgiakev',
+        'kfnfolpcfblpncetyhtrwxkbosccskxbuvcrosavnpxzoeoyyghbbqkflslfkqbbhgyyjj',
+        'qrxpxnloeozxpnvasorcvubxksccsobkxwrthytecnplbfcplofx',
+        'mlfcpidlqrvngnvttaifcbopnwezesomkxhaiafmvkbjaisyr',
+        'btultpnxbcrmornqumatserhieqggrivouwfnbnghdfall',
+        'pb',
+        'kkb',
+        'rfq',
+        'xzj',
+        'zlc',
+        'zdw',
+        's',
+        'k',
+        'w',
+        'd'
+    ]
+
+    i = 1
+    while i < len(input):
+        print(buildPalindrome(input[i], input[i + 1]))
+        i += 2
+    # print(buildPalindrome(input[3], input[4]))
