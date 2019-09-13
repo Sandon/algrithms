@@ -1,21 +1,23 @@
-10
-uxivudydgxwsgmhlracaayipsojleqhpygshcvxvchsgyphqeljospiyaacuvmeewpdwpiymwbhoxebjibxphief
-gtsawcdivtltrshjqnkkmdtjgscnozmojnhigippjemzzzbcvoyplxenffmfdzdiojuodgbulvarlhmgswxgdyduviyaov
-ddqpcjxzftwrlgptrkbkrlwgsnlcaudzdujbb
-qlfzikgxohvhtuvcjmmwvhkxcg
-lcjqoneppydpspiwqbkpsunexicskpmzmokfrcvrszcvdyfwuhtzptbbnxbhqjomxrbhjqxv
-daserfpkscixqylqprawyquevhvuzcvfmbe
-gfirlz
-zbczeghmuhx
-pcvqejw
-owqsfhov
-uuvepr
-riyfwsts
-ppomdfdtvv
-tdfdmopp
-ibdknprn
-ptjpjtrq
-ervhveh
-gdfigxq
-egfncsa
-ascnfg
+input = [
+    10,
+    'uxivudydgxwsgmhlracaayipsojleqhpygshcvxvchsgyphqeljospiyaacuvmeewpdwpiymwbhoxebjibxphief',
+    'gtsawcdivtltrshjqnkkmdtjgscnozmojnhigippjemzzzbcvoyplxenffmfdzdiojuodgbulvarlhmgswxgdyduviyaov',
+    'ddqpcjxzftwrlgptrkbkrlwgsnlcaudzdujbb',
+    'qlfzikgxohvhtuvcjmmwvhkxcg',
+    'lcjqoneppydpspiwqbkpsunexicskpmzmokfrcvrszcvdyfwuhtzptbbnxbhqjomxrbhjqxv',
+    'daserfpkscixqylqprawyquevhvuzcvfmbe',
+    'gfirlz',
+    'zbczeghmuhx',
+    'pcvqejw',
+    'owqsfhov',
+    'uuvepr',
+    'riyfwsts',
+    'ppomdfdtvv',
+    'tdfdmopp',
+    'ibdknprn',
+    'ptjpjtrq',
+    'ervhveh',
+    'gdfigxq',
+    'egfncsa',
+    'ascnfg'
+]

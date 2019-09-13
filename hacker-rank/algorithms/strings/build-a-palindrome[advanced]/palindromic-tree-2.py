@@ -141,7 +141,48 @@ def getStr(node, originStr, roundStr):
     output += roundStr[::-1]
     return output
 
+
+# Returns length of longest common
+# substring of X[0..m-1] and Y[0..n-1]
+def LCSubStr(X, Y, m, n):
+    # Create a table to store lengths of
+    # longest common suffixes of substrings.
+    # Note that LCSuff[i][j] contains the
+    # length of longest common suffix of
+    # X[0...i-1] and Y[0...j-1]. The first
+    # row and first column entries have no
+    # logical meaning, they are used only
+    # for simplicity of the program.
+
+    # LCSuff is the table with zero
+    # value initially in each cell
+    LCSuff = [[0 for k in range(n + 1)] for l in range(m + 1)]
+
+    # To store the length of
+    # longest common substring
+    maxLen = 0
+    maxSubStr = ''
+
+    # Following steps to build
+    # LCSuff[m+1][n+1] in bottom up fashion
+    for i in range(m + 1):
+        for j in range(n + 1):
+            if (i == 0 or j == 0):
+                LCSuff[i][j] = 0
+            elif (X[i - 1] == Y[j - 1]):
+                LCSuff[i][j] = LCSuff[i - 1][j - 1] + 1
+                if maxLen < LCSuff[i][j]:
+                    maxLen = LCSuff[i][j] # X: 0 -> i - 1; Y: 0 -> j - i;
+                    maxSubStr = X[i - maxLen: i]
+            else:
+                LCSuff[i][j] = 0
+    return {
+        'len': maxLen,
+        'str': maxSubStr
+    }
+
 def buildPalindrome(a, b):
+    # 1. 从a或b中自带回文的情况
     treeObjA = palindromicTree(a)
     treeA = treeObjA['tree']
     lastA = treeObjA['ptr']
@@ -224,6 +265,14 @@ def buildPalindrome(a, b):
 
             index = b.find(pal, index + 1, end)
 
+    # a或b中不自带回文
+    lcSubStr = LCSubStr(a, bReverseStr, len(a), len(bReverseStr))
+    subStrLen = lcSubStr['len']
+    subStr = lcSubStr['str']
+
+    if 2 * subStrLen > maxLen:
+        maxLen = 2 * subStrLen
+        maxStr = subStr + subStr[::-1]
 
     if (maxLen == 0):
         return '-1'
@@ -251,30 +300,37 @@ if __name__ == "__main__":
 
     input = [
         10,
-        'ottloictodtdtloloollllyocidyiodttoacoctcdcidcdttyoiilocltacdlydaailaiylcttilld',
-        'jevgfsuujwrunvgvgwpfbknkruvwzgxxgksmexqvxbghfffseuugxkwexhzfbpu',
-        'qquhuwqhdswxxrxuzzfhkplwunfagppcoildagktgdarveusjuqfistulgbglwmfgzrnyxryetwzhlnfewczmnoozlqatugmd',
-        'jwgzcfabbkoxyjxkatjmpprswkdkobdagwdwxsufeesrvncbszcepigpbzuzoootorzfskcwbqorvw',
-        'dczatfarqdkelalxzxillkfdvpfpxabqlngdscrentzamztvvcvrtcm',
-        'bqlizijdwtuyfrxolsysxlfebpolcmqsppmrfkyunydtmwbexsngxhwvroandfqjamzkpttslildlrkjoyrpxugiceahgiakev',
-        'kfnfolpcfblpncetyhtrwxkbosccskxbuvcrosavnpxzoeoyyghbbqkflslfkqbbhgyyjj',
-        'qrxpxnloeozxpnvasorcvubxksccsobkxwrthytecnplbfcplofx',
-        'mlfcpidlqrvngnvttaifcbopnwezesomkxhaiafmvkbjaisyr',
-        'btultpnxbcrmornqumatserhieqggrivouwfnbnghdfall',
-        'pb',
-        'kkb',
-        'rfq',
-        'xzj',
-        'zlc',
-        'zdw',
-        's',
-        'k',
-        'w',
-        'd'
+        'uxivudydgxwsgmhlracaayipsojleqhpygshcvxvchsgyphqeljospiyaacuvmeewpdwpiymwbhoxebjibxphief',
+        'gtsawcdivtltrshjqnkkmdtjgscnozmojnhigippjemzzzbcvoyplxenffmfdzdiojuodgbulvarlhmgswxgdyduviyaov',
+        'ddqpcjxzftwrlgptrkbkrlwgsnlcaudzdujbb',
+        'qlfzikgxohvhtuvcjmmwvhkxcg',
+        'lcjqoneppydpspiwqbkpsunexicskpmzmokfrcvrszcvdyfwuhtzptbbnxbhqjomxrbhjqxv',
+        'daserfpkscixqylqprawyquevhvuzcvfmbe',
+        'gfirlz',
+        'zbczeghmuhx',
+        'pcvqejw',
+        'owqsfhov',
+        'uuvepr',
+        'riyfwsts',
+        'ppomdfdtvv',
+        'tdfdmopp',
+        'ibdknprn',
+        'ptjpjtrq',
+        'ervhveh',
+        'gdfigxq',
+        'egfncsa',
+        'ascnfg'
     ]
 
     i = 1
     while i < len(input):
         print(buildPalindrome(input[i], input[i + 1]))
         i += 2
-    # print(buildPalindrome(input[3], input[4]))
+    # print(buildPalindrome(input[11], input[12]))
+
+    # X = 'OldSite:GeeksforGeeks.org'
+    # Y = 'NewSite:GeeksQuiz.com'
+    #
+    # m = len(X)
+    # n = len(Y)
+    # print(LCSubStr(X, Y, m, n))
