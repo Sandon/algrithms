@@ -178,11 +178,34 @@ def LCSubStr(X, Y, m, n):
                 LCSuff[i][j] = 0
     return {
         'len': maxLen,
-        'str': maxSubStr
+        'str': maxSubStr,
+        'lcSuff': LCSuff
     }
 
 def buildPalindrome(a, b):
-    # 1. 从a或b中自带回文的情况
+    result = {}
+    maxLen = 0
+    maxStr = ''
+    aLen = len(a)
+    bLen = len(b)
+
+    # 1. a或b中不自带回文
+    bReverseStr = b[::-1]
+    lcSubStr = LCSubStr(a, bReverseStr, aLen, bLen)
+    subStrLen = lcSubStr['len']
+    subStr = lcSubStr['str']
+    lcSuff = lcSubStr['lcSuff']
+
+    if 2 * subStrLen > maxLen:
+        maxLen = 2 * subStrLen
+        maxStr = subStr + subStr[::-1]
+
+    # 准备好最长后缀的集合
+    #
+    # aLCSuff = [0 for k in range(aLen + 1)]
+    # bLCSuff = [0 for k in range(bLen + 1)]
+
+    # 2. 从a或b中自带回文的情况
     treeObjA = palindromicTree(a)
     treeA = treeObjA['tree']
     lastA = treeObjA['ptr']
@@ -191,12 +214,10 @@ def buildPalindrome(a, b):
     treeB = treeObjB['tree']
     lastB = treeObjB['ptr']
 
-    result = {}
-    maxLen = 0
-    maxStr = ''
+    aLCSuffCache = {}
+    bLCSuffCache = {}
 
     # treeA and bReverseStr
-    bReverseStr = b[::-1]
     for i in range(3, lastA + 1):
         # 找到回文
         pal = ''
@@ -209,8 +230,19 @@ def buildPalindrome(a, b):
         end = len(a)
         index = a.find(pal, start, end)
         while index != -1:
-            before = a[0: index]
-            roundStr = findLongest(before, bReverseStr)
+            # before = a[0: index]
+            # roundStr = findLongest(before, bReverseStr)
+
+            # suffLen = lcSuff[index][bLen]
+            if not (index in aLCSuffCache):
+                maxSuffLen = 0
+                for x in range(1, bLen + 1):
+                    if (lcSuff[index][x] > maxSuffLen):
+                        maxSuffLen = lcSuff[index][x]
+                aLCSuffCache[index] = maxSuffLen
+            suffLen = aLCSuffCache[index]
+            roundStr = a[(index - suffLen): index]
+
             num = len(roundStr)
             if num == 0:
                 index = a.find(pal, index + 1, end)
@@ -220,6 +252,7 @@ def buildPalindrome(a, b):
             #     result[totalLen] = []
             # result[totalLen].append({'tree': treeA[i], 'roundStr': roundStr})
             resultStr = roundStr + pal + roundStr[::-1]
+
             # print(resultStr)
             if totalLen > maxLen:
                 maxLen = totalLen
@@ -228,7 +261,6 @@ def buildPalindrome(a, b):
                 maxStr = resultStr
 
             index = a.find(pal, index + 1, end)
-
 
     # treeB and aReverseStr
     aReverseStr = a[::-1]
@@ -244,9 +276,22 @@ def buildPalindrome(a, b):
         end = len(b)
         index = b.find(pal, start, end)
         while index != -1:
-            after = b[index + palLen:]
-            afterReverse = after[::-1]
-            roundStr = findLongest(afterReverse, a)
+            # after = b[index + palLen:]
+            # afterReverse = after[::-1]
+            # roundStr = findLongest(afterReverse, a)
+
+
+            # lcSuff[aLen][bLen - (index + palLen)]
+            bFixIndex = bLen - (index + palLen)
+            if not (bFixIndex in bLCSuffCache):
+                maxSuffLen = 0
+                for x in range(1, aLen + 1):
+                    if (lcSuff[x][bFixIndex] > maxSuffLen):
+                        maxSuffLen = lcSuff[x][bFixIndex]
+                bLCSuffCache[bFixIndex] = maxSuffLen
+            suffLen = bLCSuffCache[bFixIndex]
+            roundStr = bReverseStr[bFixIndex - suffLen:bFixIndex]
+
             num = len(roundStr)
             if num == 0:
                 index = b.find(pal, index + 1, end)
@@ -265,14 +310,6 @@ def buildPalindrome(a, b):
 
             index = b.find(pal, index + 1, end)
 
-    # a或b中不自带回文
-    lcSubStr = LCSubStr(a, bReverseStr, len(a), len(bReverseStr))
-    subStrLen = lcSubStr['len']
-    subStr = lcSubStr['str']
-
-    if 2 * subStrLen > maxLen:
-        maxLen = 2 * subStrLen
-        maxStr = subStr + subStr[::-1]
 
     if (maxLen == 0):
         return '-1'
@@ -293,7 +330,7 @@ if __name__ == "__main__":
     #     output = ''
     #     for i in range(tree[j].start, tree[j].end + 1):
     #         output += s[i]
-    # # print(buildPalindrome('bac', 'bac'))
+    # print(buildPalindrome('bac', 'bac'))
     # print(buildPalindrome('abc', 'def'))
     # print(buildPalindrome('jdfh', 'fds'))
     # print(findLongest('ca', 'bac'))
@@ -321,10 +358,24 @@ if __name__ == "__main__":
         'egfncsa',
         'ascnfg'
     ]
+    output = [
+        'ivudydgxwsgmhlracaayipsojleqhpygshcvxvchsgyphqeljospiyaacarlhmgswxgdyduvi',
+        'trkbkrt',
+        'xicskpmzmpkscix',
+        'geg',
+        'qeq',
+        'rr',
+        'ppomdfdtvvtdfdmopp',
+        'rtjpjtr',
+        '-1',
+        'gfncsaascnfg'
+    ]
 
     i = 1
     while i < len(input):
-        print(buildPalindrome(input[i], input[i + 1]))
+        result = buildPalindrome(input[i], input[i + 1])
+        # print(result)
+        print(result == output[int((i - 1) / 2)])
         i += 2
     # print(buildPalindrome(input[11], input[12]))
 
