@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <style>
+    td{
+      border: 1px solid black;
+    }
+  </style>
+</head>
+<body>
+<script type="module">
+  import {kingdomDivision} from '../index.js'
+  import {input} from './input.js'
+  const inputArr = input.split('\n').filter((line) => !!line)
+  const roads = []
+
+  for (let i = 1; i !== inputArr.length; i++) {
+    roads.push(inputArr[i].replace(/\s+$/g, '').split(' ').map(roadsTemp => parseInt(roadsTemp, 10)))
+  }
+  // console.log(roads.length)
+
+  console.log(kingdomDivision(roads.length + 1, roads))
+
+</script>
+</body>
+</html>
