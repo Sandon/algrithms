@@ -28,7 +28,7 @@ i,j >= 1, 且i>=j
     分两种情况，是/否把它转成大写
     f(i,j) = f(i-1, j-1) || f(i-1, j)
     
-初始
+初始 
 f(1, 1) = a[0]的upperCase == b[0] ? true : false
 f(1, >1) = false
 f(i, >i) = false
